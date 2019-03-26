@@ -1,0 +1,16 @@
+.idea/
+.vscode/
+node_modules
+
+tmp/
+temp/
+
+.next
+.env
+storybook-static/
+
+yarn-error.long
+dist/
+public/
+cache/
+yarn.lock

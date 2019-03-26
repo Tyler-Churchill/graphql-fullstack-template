@@ -1,0 +1,42 @@
+{
+  "name": "@riiborn/server",
+  "version": "0.0.1",
+  "description": "Serverless GraphQL",
+  "author": "Tyler Churchill <tyler@riiborn.com>",
+  "license": "MIT",
+  "main": "src/index.js",
+  "directories": {
+    "src": "src",
+    "test": "__tests__"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "start": "export NODE_ENV=development|| set NODE_ENV=development&& nodemon --exec ts-node src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/cors": "^2.8.4",
+    "@types/express": "^4.16.1",
+    "@types/express-session": "^1.15.12",
+    "@types/graphql": "^14.0.7",
+    "@types/node": "^11.11.3",
+    "nodemon": "^1.18.10",
+    "ts-node": "^8.0.3",
+    "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "apollo-server-express": "^2.4.8",
+    "bcrypt": "^3.0.5",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "graphql": "^14.1.1",
+    "graphql-query-complexity": "^0.2.3",
+    "pg": "^7.9.0",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^0.17.0",
+    "typedi": "^0.8.0",
+    "typeorm": "^0.2.15",
+    "typeorm-typedi-extensions": "^0.2.3"
+  }
+}

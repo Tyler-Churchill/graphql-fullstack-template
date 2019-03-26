@@ -1,0 +1,23 @@
+{
+  "name": "typegraphl-template",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Tyler Churchill",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "export NODE_ENV=development|| set NODE_ENV=development&& yarn lerna bootstrap && yarn lerna run start --stream",
+    "development:make-migrations": "ts-node ./node_modules/typeorm/cli.js migration:generate -c default -n",
+    "development:run-migrations": "ts-node ./node_modules/typeorm/cli.js migration:run -c default",
+    "development:create_migration": "ts-node ./node_modules/typeorm/cli.js migration:create -c default -n",
+    "deploy-live": "yarn build && gcloud config set project PROJECT_NAME && gcloud functions deploy api --runtime nodejs8 --trigger-http --source ./dist/src"
+  },
+  "devDependencies": {
+    "lerna": "^3.13.1"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}
