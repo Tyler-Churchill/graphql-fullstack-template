@@ -6,7 +6,7 @@ export const checkAuth: AuthChecker<AppContext> = async (
   { context: { userId } },
   roles
 ) => {
-  if (roles.length === 0) {
+  if (roles.length !== 0) {
     // no roles required, request requires user to be logged in. Check if userId is undefined
     return userId !== undefined;
   }

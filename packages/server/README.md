@@ -2,10 +2,10 @@
 
 > TODO: description
 
+## Philosophy
+
 ## Usage
 
-```
-const server = require('@riiborn/server');
+## Modules
 
-// TODO: DEMONSTRATE API
-```
+## Testing

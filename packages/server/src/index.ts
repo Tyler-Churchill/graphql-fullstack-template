@@ -1,10 +1,9 @@
 import 'reflect-metadata';
 import { Request, Response } from 'express';
-import { MainResolver } from './modules/main/main.module';
 import GraphQLServer from './server/GraphQLServer';
-import { UserResolver } from './modules/user/UserResolvers';
+import { resolvers } from './modules';
 
-const server: GraphQLServer = new GraphQLServer([MainResolver, UserResolver]);
+const server: GraphQLServer = new GraphQLServer(resolvers);
 
 /**
  * If environment in development, start local dev server

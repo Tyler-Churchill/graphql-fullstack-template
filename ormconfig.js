@@ -23,14 +23,13 @@ module.exports = [
     username: 'postgres',
     password: 'postgres',
     database: 'development-test',
-    dropSchema: false,
+    dropSchema: true,
     synchronize: true,
     logging: false,
     entities: [__dirname + '/packages/common/src/**/**/*.ts'],
     migrations: ['./migrations/**/*{.js,.ts}'],
     cli: {
-      entitiesDir: 'src/common',
-      migrationsDir: 'migrations'
+      migrationsDir: './migrations'
     }
   },
   {

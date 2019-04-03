@@ -1,10 +1,17 @@
-import { Field, ID, ObjectType } from 'type-graphql';
-import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, BaseEntity } from 'typeorm';
+import { Field, ID } from 'type-graphql';
+import {
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  BaseEntity
+} from 'typeorm';
 
 export abstract class AppBaseEntity extends BaseEntity {
-  @Field(type => ID)
   @PrimaryGeneratedColumn('uuid')
   readonly id: string;
+
+  @Field(type => ID)
+  readonly publicId: string;
 
   @Field()
   @CreateDateColumn({ type: 'timestamp' })

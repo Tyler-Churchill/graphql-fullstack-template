@@ -4,6 +4,10 @@ import * as cors from 'cors';
 import { Container } from 'typedi';
 import { buildSchema } from 'type-graphql';
 import { createConnection, Connection, useContainer } from 'typeorm';
+import queryComplexity, {
+  fieldConfigEstimator,
+  simpleEstimator
+} from 'graphql-query-complexity';
 import * as session from 'express-session';
 import { checkAuth } from '../modules/auth/Auth';
 import { AppContext } from '../middleware/AppContext';
@@ -19,12 +23,13 @@ class GraphQLServer {
   connection: Connection;
 
   async _createDBConnection() {
-    return await createConnection();
+    useContainer(Container);
+    const options = require('../../ormconfig.js');
+    const option = options.find((op: any) => op.name == process.env.NODE_ENV);
+    return await createConnection(option);
   }
 
   async _bootstrap() {
-    //Register IOC container
-    useContainer(Container);
     this.schema = await buildSchema({
       resolvers: this.resolvers,
       container: Container,
@@ -33,8 +38,9 @@ class GraphQLServer {
     });
     this.server = new ApolloServer({
       schema: this.schema,
-
       context: ({ req, res }: any) => {
+        // bridge between express request and apollo request which gets passed to resolvers
+        // pass along the request, response, and userId to resolver context
         const ctx: AppContext = {
           req,
           res,
@@ -42,14 +48,28 @@ class GraphQLServer {
         };
         return ctx;
       },
-
       playground: {
         ...defaultPlaygroundOptions,
         settings: {
           ...defaultPlaygroundOptions.settings,
           'request.credentials': 'include'
         }
-      }
+      },
+      validationRules: [
+        queryComplexity({
+          maximumComplexity: 8,
+          variables: {},
+          // onComplete: (complexity: number) => {
+          //   console.log('Query Complexity:', complexity); // TODO disable
+          // },
+          estimators: [
+            fieldConfigEstimator(),
+            simpleEstimator({
+              defaultComplexity: 1
+            })
+          ]
+        }) as any
+      ]
     });
     this.connection = await this._createDBConnection();
     this.express.use(
@@ -94,6 +114,18 @@ class GraphQLServer {
    * Start server for local development
    */
   async startDevelopment() {
+    await this._bootstrap();
+    await this.express.listen({ port: 4000 }, () =>
+      console.log(
+        `🚀 Server ready at http://localhost:4000${this.server.graphqlPath}`
+      )
+    );
+  }
+
+  /**
+   * Start server for integration testing
+   */
+  async startTest() {
     await this._bootstrap();
     await this.express.listen({ port: 4000 }, () =>
       console.log(

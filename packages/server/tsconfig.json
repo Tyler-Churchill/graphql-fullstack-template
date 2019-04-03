@@ -1,7 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "exclude": ["node_modules"],
-  "include": ["./src/**/*.tsx", "./src/**/*.ts", "../common/src/**/**/*.ts"],
+  "include": [
+    "./src/**/*.tsx",
+    "./src/**/*.ts",
+    "../common/src/**/**/*.ts",
+    "../common/**.ts"
+  ],
   "references": [{ "path": "../common" }],
   "compilerOptions": {
     "experimentalDecorators": true

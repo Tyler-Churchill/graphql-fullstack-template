@@ -1,6 +1,6 @@
 # GraphQL Fullstack Template
 
-# Prerequisites
+## Prerequisites
 
 - Node
 - yarn
@@ -24,20 +24,22 @@ yarn
 After adding or modyfing entity files in packages/common, you need to create migration files.
 
 `yarn ENV_NAME:make-migrations NAME_OF_MIGRATION`
-: this will auto-generate SQL to create the relations in the DB
 
-Example:
-Create migrations to apply to our local database.
+> this will auto-generate SQL to create the relations in the DB
+
+#### Example: Create migrations to apply to our local database.
+
 `yarn development:make-migrations add_user_entity`
 
 To apply the migrations, run:
 
 `yarn ENV_NAME:run-migrations`
 
-Example:
-Apply migrations to the local database.
+#### Example: Apply migrations to the local database.
+
 `yarn development:run-migrations`
-: this will apply any unapplied migrations
+
+> this will apply any unapplied migrations
 
 ## Deploying Production
 

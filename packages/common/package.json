@@ -4,12 +4,7 @@
   "description": "> TODO: description",
   "author": "Tyler Churchill <tyler@riiborn.com>",
   "license": "MIT",
-  "directories": {
-    "test": "__tests__"
-  },
-  "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
+  "scripts": {},
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
     "@types/graphql": "^14.0.7",

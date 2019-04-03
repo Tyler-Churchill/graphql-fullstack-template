@@ -5,14 +5,15 @@ import {
   Args,
   Mutation,
   Ctx,
-  Arg
+  Info
 } from 'type-graphql';
 import { User } from '../../../../common/src/entity/users/User';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Repository } from 'typeorm';
-import { IsEmail } from 'class-validator';
+import { IsEmail, MinLength } from 'class-validator';
 import { AppContext } from '../../middleware/AppContext';
 import * as bcrypt from 'bcrypt';
+import { mapAttributes } from '../../resolvers/Helpers';
 
 @ArgsType()
 export class RegisterUserArguments {
@@ -21,6 +22,18 @@ export class RegisterUserArguments {
   email: string;
 
   @Field(type => String)
+  @MinLength(6)
+  password: string;
+}
+
+@ArgsType()
+export class LoginUserArguments {
+  @Field(type => String)
+  @IsEmail()
+  email: string;
+
+  @Field(type => String)
+  @MinLength(6)
   password: string;
 }
 
@@ -40,19 +53,22 @@ export class UserResolver {
 
   @Mutation(returns => User, { nullable: true })
   async loginByEmail(
-    @Arg('email') email: string,
-    @Arg('password') password: string,
-    @Ctx() ctx: AppContext
+    @Args() options: LoginUserArguments,
+    @Ctx() ctx: AppContext,
+    @Info() info: any
   ): Promise<User | null> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({
+      where: { email: options.email },
+      select: ['id', 'password', ...mapAttributes(User, info)]
+    });
     if (!user) {
       return null;
     }
-    const valid = await bcrypt.compare(password, user.password);
+    const valid = await bcrypt.compare(options.password, user.password);
     if (!valid) {
       return null;
     }
-    ctx.req.session!.userId = user.id;
+    ctx.req.session!.userId = user.id; // place valid user ID into session
     return user;
   }
 }
