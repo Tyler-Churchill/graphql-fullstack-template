@@ -1,9 +1,20 @@
-import 'reflect-metadata';
+import * as path from 'path';
+
+const result = require('dotenv-flow').config({
+  cwd: '../../',
+  default_node_env: 'development'
+});
+
+if (result.error) {
+  throw result.error;
+}
+
+console.log(process.env.TYPEORM_TYPE);
 import { Request, Response } from 'express';
 import GraphQLServer from './server/GraphQLServer';
 import { resolvers } from './modules';
 
-const server: GraphQLServer = new GraphQLServer(resolvers);
+export const server: GraphQLServer = new GraphQLServer(resolvers);
 
 /**
  * If environment in development, start local dev server

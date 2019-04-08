@@ -37,10 +37,11 @@ export class LoginUserArguments {
   password: string;
 }
 
-@Resolver(User)
+@Resolver(of => User)
 export class UserResolver {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>
+    @InjectRepository(User, process.env.NODE_ENV || 'default')
+    private readonly userRepository: Repository<User>
   ) {}
 
   @Mutation(returns => User, { nullable: true })

@@ -1,9 +1,10 @@
+import 'reflect-metadata';
 import { ApolloServer, defaultPlaygroundOptions } from 'apollo-server-express';
 import * as express from 'express';
 import * as cors from 'cors';
 import { Container } from 'typedi';
 import { buildSchema } from 'type-graphql';
-import { createConnection, Connection, useContainer } from 'typeorm';
+import * as TypeORM from 'typeorm';
 import queryComplexity, {
   fieldConfigEstimator,
   simpleEstimator
@@ -11,6 +12,10 @@ import queryComplexity, {
 import * as session from 'express-session';
 import { checkAuth } from '../modules/auth/Auth';
 import { AppContext } from '../middleware/AppContext';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { DatabaseType } from 'typeorm';
+
+TypeORM.useContainer(Container);
 
 /**
  * A GraphQL server capable of being ran on google cloud functions/aws lambda
@@ -20,16 +25,30 @@ class GraphQLServer {
   server: ApolloServer;
   schema: any;
   resolvers: Array<any> = [];
-  connection: Connection;
+  connection: TypeORM.Connection;
 
   async _createDBConnection() {
-    useContainer(Container);
-    const options = require('../../ormconfig.js');
-    const option = options.find((op: any) => op.name == process.env.NODE_ENV);
-    return await createConnection(option);
+    const connection: TypeORM.Connection = await TypeORM.createConnection({
+      name: process.env.TYPEORM_CONNECTION_NAME,
+      type: 'postgres',
+      host: process.env.TYPEORM_HOST,
+      port: Number(process.env.TYPEORM_PORT),
+      username: process.env.TYPEORM_USERNAME,
+      password: process.env.TYPEORM_PASSWORD,
+      database: process.env.TYPEORM_DATABASE,
+      synchronize: !!process.env.TYPEORM_SYNCHRONIZE,
+      logging: !!process.env.TYPEORM_LOGGING,
+      entities: [process.env.TYPEORM_ENTITIES_PATH || ''],
+      migrations: ['./migrations/**/*{.js,.ts}'],
+      cli: {
+        migrationsDir: './migrations'
+      }
+    });
+    return connection;
   }
 
   async _bootstrap() {
+    this.connection = await this._createDBConnection();
     this.schema = await buildSchema({
       resolvers: this.resolvers,
       container: Container,
@@ -71,7 +90,6 @@ class GraphQLServer {
         }) as any
       ]
     });
-    this.connection = await this._createDBConnection();
     this.express.use(
       cors({
         credentials: true,

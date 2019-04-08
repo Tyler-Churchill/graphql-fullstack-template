@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Can register by email 1`] = `
+Object {
+  "data": Object {
+    "registerByEmail": Object {
+      "__typename": "User",
+      "email": "ttwwt@awadw.com",
+      "firstName": null,
+      "isEmailVerified": false,
+      "lastName": null,
+      "roles": Array [
+        "PUBLIC",
+      ],
+    },
+  },
+}
+`;
