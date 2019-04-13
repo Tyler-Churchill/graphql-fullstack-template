@@ -40,7 +40,7 @@ export class LoginUserArguments {
 @Resolver(of => User)
 export class UserResolver {
   constructor(
-    @InjectRepository(User, process.env.NODE_ENV || 'default')
+    @InjectRepository(User)
     private readonly userRepository: Repository<User>
   ) {}
 

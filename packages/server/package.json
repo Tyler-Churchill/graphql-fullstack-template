@@ -10,7 +10,7 @@
     "test": "__tests__"
   },
   "scripts": {
-    "test": "jest --passWithNoTests --detectOpenHandles --forceExit",
+    "test": "export NODE_ENV=test|| set NODE_ENV=test&& jest --passWithNoTests --detectOpenHandles --forceExit",
     "start": "export NODE_ENV=development|| set NODE_ENV=development&& nodemon --exec ts-node src/index.ts"
   },
   "devDependencies": {

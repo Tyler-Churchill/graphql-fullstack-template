@@ -1,3 +1,9 @@
+import * as path from 'path';
+
+require('dotenv-flow').config({
+  cwd: path.resolve(__dirname + '/../../../../')
+});
+
 import 'reflect-metadata';
 import { ApolloServer, defaultPlaygroundOptions } from 'apollo-server-express';
 import * as express from 'express';
@@ -12,10 +18,7 @@ import queryComplexity, {
 import * as session from 'express-session';
 import { checkAuth } from '../modules/auth/Auth';
 import { AppContext } from '../middleware/AppContext';
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import { DatabaseType } from 'typeorm';
-
-TypeORM.useContainer(Container);
+import { entities } from '../../../common/src/Entities';
 
 /**
  * A GraphQL server capable of being ran on google cloud functions/aws lambda
@@ -25,26 +28,30 @@ class GraphQLServer {
   server: ApolloServer;
   schema: any;
   resolvers: Array<any> = [];
-  connection: TypeORM.Connection;
+  connection: TypeORM.Connection | null;
 
   async _createDBConnection() {
-    const connection: TypeORM.Connection = await TypeORM.createConnection({
-      name: process.env.TYPEORM_CONNECTION_NAME,
-      type: 'postgres',
-      host: process.env.TYPEORM_HOST,
-      port: Number(process.env.TYPEORM_PORT),
-      username: process.env.TYPEORM_USERNAME,
-      password: process.env.TYPEORM_PASSWORD,
-      database: process.env.TYPEORM_DATABASE,
-      synchronize: !!process.env.TYPEORM_SYNCHRONIZE,
-      logging: !!process.env.TYPEORM_LOGGING,
-      entities: [process.env.TYPEORM_ENTITIES_PATH || ''],
-      migrations: ['./migrations/**/*{.js,.ts}'],
-      cli: {
-        migrationsDir: './migrations'
-      }
-    });
-    return connection;
+    TypeORM.useContainer(Container);
+    try {
+      const connection: TypeORM.Connection = await TypeORM.createConnection({
+        name: process.env.TYPEORM_CONNECTION_NAME,
+        type: 'postgres',
+        host: process.env.TYPEORM_HOST,
+        port: Number(process.env.TYPEORM_PORT),
+        username: process.env.TYPEORM_USERNAME,
+        password: process.env.TYPEORM_PASSWORD,
+        database: process.env.TYPEORM_DATABASE,
+        synchronize: !!process.env.TYPEORM_SYNCHRONIZE,
+        logging: !!process.env.TYPEORM_LOGGING,
+        entities: entities,
+        migrations: ['./migrations/**/*{.js,.ts}'],
+        cli: {
+          migrationsDir: './migrations'
+        }
+      });
+      return connection;
+    } catch (e) {}
+    return null;
   }
 
   async _bootstrap() {
@@ -78,9 +85,6 @@ class GraphQLServer {
         queryComplexity({
           maximumComplexity: 8,
           variables: {},
-          // onComplete: (complexity: number) => {
-          //   console.log('Query Complexity:', complexity); // TODO disable
-          // },
           estimators: [
             fieldConfigEstimator(),
             simpleEstimator({
