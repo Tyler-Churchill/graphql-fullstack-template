@@ -32,26 +32,24 @@ class GraphQLServer {
 
   async _createDBConnection() {
     TypeORM.useContainer(Container);
-    try {
-      const connection: TypeORM.Connection = await TypeORM.createConnection({
-        name: process.env.TYPEORM_CONNECTION_NAME,
-        type: 'postgres',
-        host: process.env.TYPEORM_HOST,
-        port: Number(process.env.TYPEORM_PORT),
-        username: process.env.TYPEORM_USERNAME,
-        password: process.env.TYPEORM_PASSWORD,
-        database: process.env.TYPEORM_DATABASE,
-        synchronize: !!process.env.TYPEORM_SYNCHRONIZE,
-        logging: !!process.env.TYPEORM_LOGGING,
-        entities: entities,
-        migrations: ['./migrations/**/*{.js,.ts}'],
-        cli: {
-          migrationsDir: './migrations'
-        }
-      });
-      return connection;
-    } catch (e) {}
-    return null;
+
+    const connection: TypeORM.Connection = await TypeORM.createConnection({
+      name: process.env.TYPEORM_CONNECTION_NAME,
+      type: 'postgres',
+      host: process.env.TYPEORM_HOST,
+      port: Number(process.env.TYPEORM_PORT),
+      username: process.env.TYPEORM_USERNAME,
+      password: process.env.TYPEORM_PASSWORD,
+      database: process.env.TYPEORM_DATABASE,
+      synchronize: JSON.parse(process.env.TYPEORM_SYNCHRONIZE || 'false'),
+      logging: JSON.parse(process.env.TYPEORM_LOGGING || 'false'),
+      entities: entities,
+      migrations: ['./migrations/**/*{.js,.ts}'],
+      cli: {
+        migrationsDir: './migrations'
+      }
+    });
+    return connection;
   }
 
   async _bootstrap() {
@@ -135,19 +133,7 @@ class GraphQLServer {
   /**
    * Start server for local development
    */
-  async startDevelopment() {
-    await this._bootstrap();
-    await this.express.listen({ port: 4000 }, () =>
-      console.log(
-        `🚀 Server ready at http://localhost:4000${this.server.graphqlPath}`
-      )
-    );
-  }
-
-  /**
-   * Start server for integration testing
-   */
-  async startTest() {
+  async startLocal() {
     await this._bootstrap();
     await this.express.listen({ port: 4000 }, () =>
       console.log(

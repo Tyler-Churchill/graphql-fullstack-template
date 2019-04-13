@@ -9,7 +9,7 @@ export const server: GraphQLServer = new GraphQLServer(resolvers);
  */
 (async () => {
   if (process.env.NODE_ENV === 'development') {
-    await server.startDevelopment();
+    await server.startLocal();
   }
 })();
 

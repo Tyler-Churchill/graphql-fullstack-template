@@ -17,3 +17,31 @@ it('Can register by email', async () => {
   });
   expect(resp).toMatchSnapshot();
 });
+
+it('Can login by email', async () => {
+  const email = 'testemail@email.com';
+  const password = 'testtest';
+  await TestClient.mutate({
+    mutation: gql`
+      mutation {
+        registerByEmail(email: "${email}", password: "${password}") {
+          email
+          firstName
+          lastName
+          isEmailVerified
+          roles
+        }
+      }
+    `
+  });
+  const resp = await TestClient.mutate({
+    mutation: gql`
+      mutation {
+        loginByEmail(email: "${email}", password: "${password}") {
+          email
+        }
+      }
+    `
+  });
+  expect(resp).toMatchSnapshot();
+});

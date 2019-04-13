@@ -1,5 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Can login by email 1`] = `
+Object {
+  "data": Object {
+    "loginByEmail": Object {
+      "__typename": "User",
+      "email": "testemail@email.com",
+    },
+  },
+}
+`;
+
 exports[`Can register by email 1`] = `
 Object {
   "data": Object {

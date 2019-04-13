@@ -3,7 +3,6 @@ import { AppBaseEntity } from '../BaseEntity';
 import { ObjectType, Field, registerEnumType, InputType } from 'type-graphql';
 import { Entity, Column, BeforeInsert } from 'typeorm';
 import { IsEmail, Length, IsIn } from 'class-validator';
-import { IsUnique, IsUserAlreadyExist } from '../../validators/IsUnique';
 
 export enum USER_ROLE_MAP {
   PUBLIC = 'ROLE_PUBLIC',
@@ -24,9 +23,6 @@ export class UserRolesInput {
 @ObjectType()
 @Entity('users')
 export class User extends AppBaseEntity {
-  @IsUserAlreadyExist({
-    message: 'User $value already exists. Choose another name.'
-  })
   @Field()
   @Column({ unique: true })
   @IsEmail({ require_tld: true }, { message: 'Please provide a valid email.' })
